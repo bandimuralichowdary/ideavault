@@ -1,6 +1,66 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+
+export default function ResetPasswordPage() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const [password, setPassword] = useState("");
+  const [valid, setValid] = useState(false);
+
+  const code = params.get("code");
+
+  useEffect(() => {
+    // If code exists → mark valid
+    if (!code) return;
+    setValid(true);
+  }, [code]);
+
+  async function handleReset() {
+    if (!password.trim()) return alert("Enter a valid password");
+
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) return alert(error.message);
+    alert("Password updated successfully!");
+    router.push("/login");
+  }
+
+  if (!code) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Invalid or expired link!
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6 text-white">
+      <div className="glass-box p-6 rounded-3xl border border-white/10 backdrop-blur-md shadow-xl w-full max-w-md">
+        <h1 className="text-3xl font-bold mb-4">Reset Password</h1>
+
+        <input
+          type="password"
+          placeholder="New Password"
+          className="lux-input"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button className="lux-btn primary mt-4" onClick={handleReset}>
+          Update Password
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+/*"use client";
+
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -92,3 +152,4 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
+*/
