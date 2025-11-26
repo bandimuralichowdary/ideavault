@@ -1,24 +1,24 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-// rest of your code...
-
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const accessToken = searchParams.get("access_token");
+  const searchParams = typeof window !== "undefined" ? useSearchParams() : null;
+  const accessToken = searchParams?.get("access_token");
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [validLink, setValidLink] = useState(false);
 
+  // Only run on client-side
   useEffect(() => {
-    if (!accessToken) {
+    if (accessToken) {
+      setValidLink(true);
+    } else {
       alert("Invalid or expired link!");
       router.replace("/login");
     }
@@ -48,6 +48,8 @@ export default function ResetPasswordPage() {
       setLoading(false);
     }
   }
+
+  if (!validLink) return null; // Prevent rendering during build or invalid token
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
