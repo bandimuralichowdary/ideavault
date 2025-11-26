@@ -1,14 +1,19 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ResetPasswordClient() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
-
+  const [token, setToken] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
+
+  // Extract token from URL hash
+  useEffect(() => {
+    const hash = window.location.hash; // "#access_token=xyz&expires_at=..."
+    const params = new URLSearchParams(hash.replace("#", ""));
+    const accessToken = params.get("access_token");
+    setToken(accessToken);
+  }, []);
 
   if (!token) {
     return (
@@ -20,13 +25,13 @@ export default function ResetPasswordClient() {
 
   const handleReset = async () => {
     try {
-      const res = await fetch("/api/reset-password", {
+      const response = await fetch("/api/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
       setMessage(data.message);
     } catch {
       setMessage("Something went wrong.");
