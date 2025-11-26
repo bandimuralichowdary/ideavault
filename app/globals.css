@@ -24,3 +24,48 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.lux-input {
+  @apply w-full bg-white/10 text-white placeholder-white/40 p-3 rounded-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30;
+}
+
+.lux-btn {
+  @apply w-full py-3 rounded-xl font-semibold transition-all duration-300 active:scale-95;
+}
+
+.lux-btn.primary {
+  @apply bg-white text-black hover:bg-gray-200;
+}
+
+.lux-btn.danger {
+  @apply bg-red-600 hover:bg-red-700 text-white;
+}
+
+.glass-box {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+}
+
+/* Tailwind custom class: lux-input */
+.lux-input {
+  @apply w-full p-4 mb-4 rounded-2xl bg-white/5 border border-white/20 text-gray-100 placeholder-gray-400
+         focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400
+         backdrop-blur-md transition duration-300 ease-in-out;
+}
+
+/* Tailwind custom classes: lux-btn variants */
+.lux-btn {
+  @apply px-6 py-3 font-semibold rounded-2xl text-lg transition-all duration-300 shadow-lg shadow-black/30;
+}
+
+.lux-btn.primary {
+  @apply bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700;
+}
+
+.lux-btn.secondary {
+  @apply bg-gray-800 text-gray-100 hover:bg-gray-700;
+}
+
+.lux-btn.danger {
+  @apply bg-red-600 text-white hover:bg-red-700;
+}
