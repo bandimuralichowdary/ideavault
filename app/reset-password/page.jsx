@@ -1,32 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+export const dynamic = "force-dynamic"; // ⬅️ critical fix
+
 import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function ResetPasswordPage() {
-  const router = useRouter();
   const params = useSearchParams();
+  const router = useRouter();
   const [password, setPassword] = useState("");
-  const [valid, setValid] = useState(false);
 
   const code = params.get("code");
-
-  useEffect(() => {
-    // If code exists → mark valid
-    if (!code) return;
-    setValid(true);
-  }, [code]);
-
-  async function handleReset() {
-    if (!password.trim()) return alert("Enter a valid password");
-
-    const { error } = await supabase.auth.updateUser({ password });
-
-    if (error) return alert(error.message);
-    alert("Password updated successfully!");
-    router.push("/login");
-  }
 
   if (!code) {
     return (
@@ -34,6 +19,16 @@ export default function ResetPasswordPage() {
         Invalid or expired link!
       </div>
     );
+  }
+
+  async function handleReset() {
+    if (!password.trim()) return alert("Enter a valid password");
+
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return alert(error.message);
+
+    alert("Password updated!");
+    router.push("/login");
   }
 
   return (
