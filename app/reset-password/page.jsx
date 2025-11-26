@@ -15,8 +15,8 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     if (!accessToken) {
-      alert("Invalid or expired link! Please request a new password reset.");
-      router.replace("/reset"); // redirect to the email reset page
+      alert("Invalid or expired link!");
+      router.replace("/login");
     }
   }, [accessToken, router]);
 
@@ -30,28 +30,19 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      // Update password using Supabase's access token
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      }, {
-        accessToken, // pass the token received in the reset link
-      });
-
+      const { error } = await supabase.auth.updateUser(
+        { password: newPassword },
+        { accessToken }
+      );
       if (error) throw error;
-
       alert("Password updated successfully! Please login.");
       router.replace("/login");
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to update password");
+      alert(err?.message || "Failed to update password");
     } finally {
       setLoading(false);
     }
-  }
-
-  if (!accessToken) {
-    // Avoid rendering the form if token is invalid
-    return null;
   }
 
   return (
@@ -75,7 +66,6 @@ export default function ResetPasswordPage() {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-
         <button
           onClick={handleReset}
           disabled={loading}
