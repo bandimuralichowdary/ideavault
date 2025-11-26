@@ -1,10 +1,15 @@
-// app/actions.ts
-import { supabase } from "@/lib/supabase";
+"use server";
 
-/**
- * Insert a note. This must be called from the browser (user session present).
- * Returns the inserted note object on success, or throws an Error.
- */
+import { createClient } from "@supabase/supabase-js";
+
+function serverClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
+
+/** Insert a new note */
 export async function addNoteClient(
   user_id: string,
   title: string,
@@ -13,8 +18,8 @@ export async function addNoteClient(
 ) {
   if (!user_id) throw new Error("Missing user_id");
 
-  // clean tags
-  const cleanTags = (tags || []).filter(Boolean);
+  const supabase = serverClient();
+  const cleanTags = tags.filter(Boolean);
 
   const { data, error } = await supabase
     .from("notes")
@@ -22,18 +27,15 @@ export async function addNoteClient(
     .select()
     .single();
 
-  if (error) {
-    // include full error for debugging
-    throw new Error(error.message || JSON.stringify(error));
-  }
+  if (error) throw new Error(error.message);
   return data;
 }
 
-/**
- * Fetch notes for a specific user.
- */
+/** Fetch all notes for a user */
 export async function fetchNotesClient(user_id: string) {
   if (!user_id) throw new Error("Missing user_id");
+
+  const supabase = serverClient();
 
   const { data, error } = await supabase
     .from("notes")
@@ -41,22 +43,21 @@ export async function fetchNotesClient(user_id: string) {
     .eq("user_id", user_id)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(error.message || JSON.stringify(error));
-  }
+  if (error) throw new Error(error.message);
   return data || [];
 }
 
-/**
- * Delete a note by id (user must be owner — RLS will enforce)
- */
+/** Delete a note */
 export async function deleteNoteClient(note_id: string) {
-  if (!note_id) throw new Error("Missing note id");
+  if (!note_id) throw new Error("Missing note_id");
 
-  const { error } = await supabase.from("notes").delete().eq("id", note_id);
+  const supabase = serverClient();
 
-  if (error) {
-    throw new Error(error.message || JSON.stringify(error));
-  }
+  const { error } = await supabase
+    .from("notes")
+    .delete()
+    .eq("id", note_id);
+
+  if (error) throw new Error(error.message);
   return true;
 }
