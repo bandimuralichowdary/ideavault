@@ -15,8 +15,8 @@ export default function ResetPage() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://ideavault-gray.vercel.app/login", // fixed redirect
-      });
+  redirectTo: "https://ideavault-gray.vercel.app/reset-password",
+});
       if (error) throw error;
 
       alert(
