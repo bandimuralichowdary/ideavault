@@ -22,7 +22,7 @@ export default function RegisterPage() {
         password,
         options: {
           data: { full_name: name },
-          emailRedirectTo: "https://ideavault.vercel.app/login",
+          emailRedirectTo: "https://ideavault-gray.vercel.app/",
         },
       });
       if (error) throw error;
